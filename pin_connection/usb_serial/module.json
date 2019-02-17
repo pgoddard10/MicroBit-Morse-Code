@@ -1,0 +1,11 @@
+{
+  "name": "usb-serial",
+  "version": "1.0.0",
+  "description": "IoT  micro:bit example output USB",
+  "license": "MIT",
+  "dependencies": {
+    "microbit": "lancaster-university/microbit"
+  },
+  "targetDependencies": {},
+  "bin": "./source"
+}

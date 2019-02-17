@@ -1,0 +1,11 @@
+{
+  "name": "timed-button-press",
+  "version": "1.0.0",
+  "description": "IoT  micro:bit examples.",
+  "license": "MIT",
+  "dependencies": {
+    "microbit": "lancaster-university/microbit"
+  },
+  "targetDependencies": {},
+  "bin": "./source"
+}

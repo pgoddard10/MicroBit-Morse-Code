@@ -1,0 +1,11 @@
+{
+  "name": "iot-morse-code",
+  "version": "1.0.0",
+  "description": "IoT  micro:bit morse-code.",
+  "license": "MIT",
+  "dependencies": {
+    "microbit": "lancaster-university/microbit"
+  },
+  "targetDependencies": {},
+  "bin": "./source"
+}
