@@ -1,3 +1,9 @@
+/*
+ * File: Interface.h
+ * Author: Paul Goddard
+ * Date: 17-02-2019
+ */
+
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
@@ -14,7 +20,7 @@ public:
 	void init(MicroBit* uBit);
 	char get_human_char(std::vector<char>* message_n);
 	ManagedString get_human_message();
-	void send(MicroBit* uBit, uint64_t time);
+	void send(MicroBit* uBit, std::string morse);
 
 private:
 	enum Role {

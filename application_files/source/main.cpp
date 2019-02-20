@@ -1,11 +1,12 @@
 /*
  * File: main.cpp
  * Author: Paul Goddard
- * Date: 24-01-2019
+ * Date: 17-02-2019
  */
 
 #include "MicroBit.h"
 #include "Interface.h"
+#include "Encrypter.h"
 
 MicroBit uBit;
 

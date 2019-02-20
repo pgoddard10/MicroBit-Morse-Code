@@ -41,10 +41,10 @@ endfunction()
 set(YOTTA_BUILD_YEAR "2019") # UTC year
 set(YOTTA_BUILD_MONTH "2") # UTC month 1-12
 set(YOTTA_BUILD_DAY "17") # UTC day 1-31
-set(YOTTA_BUILD_HOUR "17") # UTC hour 0-24
-set(YOTTA_BUILD_MINUTE "36") # UTC minute 0-59
-set(YOTTA_BUILD_SECOND "40") # UTC second 0-61
-set(YOTTA_BUILD_UUID "9f942888-4610-4ee9-9413-d9ebb26301b1") # unique random UUID for each build
+set(YOTTA_BUILD_HOUR "19") # UTC hour 0-24
+set(YOTTA_BUILD_MINUTE "49") # UTC minute 0-59
+set(YOTTA_BUILD_SECOND "20") # UTC second 0-61
+set(YOTTA_BUILD_UUID "1f9ac3f5-7e55-456a-9617-0dea85819f72") # unique random UUID for each build
 set(TARGET BBC_MICROBIT_CLASSIC_GCC)
 set(TARGET_LIKE_BBC_MICROBIT_CLASSIC_GCC TRUE)
 set(YOTTA_BUILD_INFO_HEADER "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/build/bbc-microbit-classic-gcc/yotta_build_info.h")

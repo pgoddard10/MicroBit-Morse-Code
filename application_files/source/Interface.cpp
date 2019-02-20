@@ -1,5 +1,12 @@
+/*
+ * File: Interface.cpp
+ * Author: Paul Goddard
+ * Date: 17-02-2019
+ */
+
 #include "MicroBit.h"
 #include "Interface.h"
+#include "Encrypter.h"
 
 MicroBitPin P1(MICROBIT_ID_IO_P1, MICROBIT_PIN_P1, PIN_CAPABILITY_DIGITAL);
 MicroBitButton buttonA(MICROBIT_PIN_BUTTON_A, MICROBIT_ID_BUTTON_A);
@@ -60,6 +67,7 @@ Interface::~Interface() {
 void Interface::init(MicroBit* uBit) {
     
     (*uBit).display.scrollAsync("Go");
+	Encrypter enc = Encrypter();
     
     while(this->broadcasting) {
 		
@@ -87,41 +95,38 @@ void Interface::init(MicroBit* uBit) {
         if (pressed) { // if button was pressed
             // geater than 5 secs
             if (delta > 5000) { // > 1 sec
-				if(this->role==SENDER)
-					send(uBit, 5050);
 				input_morse_char = '@';
                 (*uBit).display.print("@");
-                (*uBit).sleep(500);
             }
             // geater than 2 seconds but less than 5 secs
             else if (delta > 2000) { // > 2 secs
-				if(this->role==SENDER)
-					send(uBit, 2025);
 				input_morse_char = '\\';
                 (*uBit).display.print("\\");
-                (*uBit).sleep(500);
             }
             // geater than 1 second but less than 2 secs
             else if (delta > 1000) { // > 1 sec
-				if(this->role==SENDER)
-					send(uBit, 1010);
 				input_morse_char = '-';
                 (*uBit).display.print(dash);
-                (*uBit).sleep(500);
             }
             // greater than 1/2 sec, but less than 1 sec
             else if (delta > 500) { // > 0.5 sec
-				if(this->role==SENDER)
-					send(uBit, 510);
 				input_morse_char = '.';
                 (*uBit).display.print(dot);
-                (*uBit).sleep(500);
             }
+            (*uBit).sleep(500); //display the morse_char for 0.5 seconds
+            
 			if (input_morse_char == '.' || input_morse_char == '-')
 				this->message[this->message.size() - 1].push_back(input_morse_char); //add input_morse_char onto the end of the vector at the end of the overall morse vector
 			else if (input_morse_char == '\\') { //single backslash but \ is escape character, therefore need to have two slashes
 				this->new_input_morse_char = true;
-				(*uBit).display.print(this->get_human_char(&this->message[this->message.size() - 1]));
+
+				char hc = this->get_human_char(&this->message[this->message.size() - 1]);
+				std::string morse = enc.swap_human_to_morse_code(&this->morse_to_human_char_map, enc.encrypt_human_character(hc));
+				
+				if(this->role==SENDER)
+					send(uBit,morse);
+				//(*uBit).display.print(this->get_human_char(&this->message[this->message.size() - 1]));
+				(*uBit).display.print(enc.decrypt_human_character(this->get_human_char(&this->message[this->message.size() - 1])));
                 (*uBit).sleep(500);
 			}
 			else if (input_morse_char == '@')
@@ -157,9 +162,21 @@ ManagedString Interface::get_human_message() {
 	}
 	return human_letter;
 }
-void Interface::send(MicroBit* uBit, uint64_t time) {
+void Interface::send(MicroBit* uBit, std::string morse) {
 	//physically send a value from pin 1
-	P1.setDigitalValue(1);
-	(*uBit).sleep(time);
-	P1.setDigitalValue(0);
+	for(char& c : morse) {
+		uint64_t time = 10;
+		if(c=='.')
+			time = 510;
+		else if(c=='-')
+			time = 1010;
+		else if(c=='\\')
+			time = 2020;
+		else if(c=='@')
+			time = 5010;
+		
+		P1.setDigitalValue(1);
+		(*uBit).sleep(time);
+		P1.setDigitalValue(0);
+	}
 }
