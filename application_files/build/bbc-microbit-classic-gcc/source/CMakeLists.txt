@@ -6,14 +6,14 @@ include_directories("/home/student/ufcfvk-15-2-iot-challenge-2/application_files
 
 
 set(YOTTA_AUTO_IOT-MORSE-CODE_CPP_FILES
-    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Interface.cpp"
     "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/main.cpp"
-    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Encrypter.cpp"
+    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Interface.cpp"
+    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Tree.cpp"
 )
 # force dependency on the config header for cpp files, which CMake otherwise wouldn't track:
 set_property(SOURCE ${YOTTA_AUTO_IOT-MORSE-CODE_CPP_FILES} PROPERTY OBJECT_DEPENDS "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/build/bbc-microbit-classic-gcc/yotta_config.h")
 set(YOTTA_AUTO_IOT-MORSE-CODE_HEADER_FILES
-    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Encrypter.h"
+    "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Tree.h"
     "/home/student/ufcfvk-15-2-iot-challenge-2/application_files/source/Interface.h"
 )
 # force dependency on the config header for header files, which CMake otherwise wouldn't track:

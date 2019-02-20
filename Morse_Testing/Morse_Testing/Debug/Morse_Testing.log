@@ -1,5 +1,0 @@
-﻿  Interface.cpp
-c:\users\paul\documents\visual studio 2017\ufcfvk-15-2-iot-challenge-2\morse_testing\morse_testing\interface.cpp(95): warning C4018: '<': signed/unsigned mismatch
-  Morse_Testing.cpp
-  Generating Code...
-  Morse_Testing.vcxproj -> C:\Users\paul\Documents\Visual Studio 2017\ufcfvk-15-2-iot-challenge-2\Morse_Testing\Debug\Morse_Testing.exe
