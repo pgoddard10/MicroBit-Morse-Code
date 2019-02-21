@@ -20,7 +20,6 @@ void Interface::reset() {
 	this->message_char.empty();
 	this->mc_character = "";
 	this->message = "";
-	this->decryption_map.clear(); //clear the memory used for the map. Does mean recreating if encryption is used, but keeps memory empty if not encrypting.
 }
 
 void Interface::error() {
@@ -28,12 +27,15 @@ void Interface::error() {
 }
 void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 	if (this->mc_character.length() > 0) { //prevents empty characters being saved
-		char human_character = (*tree).find(tree, this->mc_character); //returns letter for morse code character, i.e. .- returns A
+		char human_character = ' ';
 		if (encrypt_message) {
-			this->encrypt(&human_character); //encrypt: shift 2 = A becomes C, or U becomes W, etc...
-			std::string mc = this->decryption_map[human_character];
-			for (char m : mc)
-				this->send(&m); //if encrypting, send after successful character completion
+			std::string enc_morse_code = "";
+			human_character = (*tree).find(tree, this->mc_character, &enc_morse_code); //returns letter for morse code character, i.e. .- returns A and updates the string pointer to contain an encrypted morse code
+			for (char emc : enc_morse_code)
+				this->send(&emc); //if encrypting, send after successful character input (rather than after each dot & dash)
+		}
+		else {
+			human_character = (*tree).find(tree, this->mc_character); //returns letter for morse code character, i.e. .- returns A
 		}
 		this->message.push_back(human_character); //store the character into the string
 		this->mc_character = ""; //reset character string;
@@ -69,17 +71,17 @@ void Interface::print_message() {
 	//loops through the message vector that's been built and outputs a character at a time
 
 	// +++++++++++++  COMPLETE (non-encrypted) MESSAGE
-	//std::cout << "Before decryption, your entire message is: |" << this->message << "|" << std::endl;
+	std::cout << "Before decryption, your entire message is: |" << this->message << "|" << std::endl;
 
 	// +++++++++++++  COMPLETE (encrypted) MESSAGE
-	//std::cout << "After decryption, your entire message is: |";
+	std::cout << "After decryption, your entire message is: |";
 	for (char m : this->message) {
 		if (encrypt_message)
 			this->decrypt(&m);
 		char c = m;
 		std::cout << m;
 	}
-	//std::cout << "|\n" << std::endl;
+	std::cout << "|\n" << std::endl;
 }
 void Interface::encrypt(char* c) {
 	//operates a shift 2 policy
@@ -123,53 +125,80 @@ void Interface::send(char* c){
 	else
 		this->error();
 }
-void Interface::insert(Tree * tree, char c, std::string morse_code) {
-	if(this->encrypt_message) //only build the map if encrypting
-		this->decryption_map.insert({ c, morse_code });
-
-	if (!(*tree).insert(tree, c, morse_code)) //if input is not valid, an error will be thrown
-		this->error();
-}
-
 void Interface::build_tree(Tree* tree) {
 	//start inserting letters and corresponding morse code
-	this->insert(tree, 'A', ".-");
-	this->insert(tree, 'B', "-...");
-	this->insert(tree, 'C', "-.-.");
-	this->insert(tree, 'D', "-..");
-	this->insert(tree, 'E', ".");
-	this->insert(tree, 'F', "..-.");
-	this->insert(tree, 'G', "--.");
-	this->insert(tree, 'H', "....");
-	this->insert(tree, 'I', "..");
-	this->insert(tree, 'J', ".---");
-	this->insert(tree, 'K', "-.-");
-	this->insert(tree, 'L', ".-..");
-	this->insert(tree, 'M', "--");
-	this->insert(tree, 'N', "-.");
-	this->insert(tree, 'O', "---");
-	this->insert(tree, 'P', ".--.");
-	this->insert(tree, 'Q', "--.-");
-	this->insert(tree, 'R', ".-.");
-	this->insert(tree, 'S', "...");
-	this->insert(tree, 'T', "-");
-	this->insert(tree, 'U', "..-");
-	this->insert(tree, 'V', "...-");
-	this->insert(tree, 'W', ".--");
-	this->insert(tree, 'X', "-..-");
-	this->insert(tree, 'Y', "-.--");
-	this->insert(tree, 'Z', "--..");
-	this->insert(tree, '0', "-----");
-	this->insert(tree, '1', ".----");
-	this->insert(tree, '2', "..---");
-	this->insert(tree, '3', "...--");
-	this->insert(tree, '4', "....-");
-	this->insert(tree, '5', ".....");
-	this->insert(tree, '6', "-....");
-	this->insert(tree, '7', "--...");
-	this->insert(tree, '8', "---..");
-	this->insert(tree, '9', "----.");
-	this->insert(tree, 'A', ".-");
+	if (!(*tree).insert(tree, 'A', ".-", "-.-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'B', "-...", "-..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'C', "-.-.", ".")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'D', "-..", "..-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'E', ".", "--.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'F', "..-.", "....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'G', "--.", "..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'H', "....", ".---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'I', "..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'J', ".---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'K', "-.-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'L', ".-..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'M', "--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'N', "-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'O', "---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'P', ".--.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Q', "--.-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'R', ".-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'S', "...")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'T', "-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'U', "..-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'V', "...-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'W', ".--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'X', "-..-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Y', "-.--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Z', "--..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '0', "-----")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '1', ".----")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '2', "..---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '3', "...--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '4', "....-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '5', ".....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '6', "-....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '7', "--...")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '8', "---..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '9', "----.")) //if input is not valid, an error will be thrown
+		this->error();
 }
 void Interface::init() {
 	Tree* tree = new Tree(); //create empty tree, ready to add morse code tree details
@@ -192,7 +221,7 @@ void Interface::init() {
 		else if(enc_s == "-.#")
 			this->encrypt_message = false;
 
-		build_tree(tree); //set up the morse code and character tree/map
+		build_tree(tree); //set up the morse code and character tree
 
 		for (char m : enc_s) {
 			//let the receiving device know whether we're using encryption or not.
