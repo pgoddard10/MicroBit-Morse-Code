@@ -5,13 +5,14 @@ Tree::Tree() {
 	//create a new Tree node setting everything to null
 	dot = { nullptr };
 	dash = { nullptr };
-	c = '\0';
+	c = '~';
+	enc_morse_code = "";
 }
 
 Tree::~Tree() {
 }
 
-bool Tree::insert(Tree* tree, char c, std::string morse_code) {
+bool Tree::insert(Tree* tree, char c, std::string morse_code, std::string enc_morse_code) {
 	for (char mc : morse_code) {
 		if (mc == '.') {
 			if (tree->dot == nullptr)
@@ -28,10 +29,11 @@ bool Tree::insert(Tree* tree, char c, std::string morse_code) {
 		}
 	}
 	tree->c = c;
+	tree->enc_morse_code = enc_morse_code;
 	return true;
 }
 
-char Tree::find(Tree* tree, std::string morse_code) {
+char Tree::find(Tree* tree, std::string morse_code, std::string* enc_morse_code) {
 	for (char mc : morse_code) {
 		if (mc == '.') {
 			if (tree->dot == nullptr)
@@ -47,5 +49,7 @@ char Tree::find(Tree* tree, std::string morse_code) {
 			return '~'; //invalid input
 		}
 	}
-	return tree->c;
+	if(enc_morse_code!=nullptr) //i.e. if encryption is switched on
+		*enc_morse_code = tree->enc_morse_code;
+	return tree->c; //return the character
 }

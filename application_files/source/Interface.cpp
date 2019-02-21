@@ -26,7 +26,6 @@ void Interface::reset() {
 	this->message_char.empty();
 	this->mc_character = "";
 	this->message = "";
-	this->decryption_map.clear(); //clear the memory used for the map. Does mean recreating if encryption is used, but keeps memory empty if not encrypting.
 	this->pressed = false;
 }
 
@@ -36,21 +35,26 @@ void Interface::error() {
 }
 void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 	if (this->mc_character.length() > 0) { //prevents empty characters being saved
-		char human_character = (*tree).find(tree, this->mc_character); //returns letter for morse code character, i.e. .- returns A
-		if (this->encrypt_message) {
-			this->encrypt(&human_character); //encrypt: shift 2 = A becomes C, or U becomes W, etc...
-			string mc = this->decryption_map[human_character];
-			if(this->role==SENDER) {
-				for (char m : mc)
-					this->send(&m); //if encrypting, send after successful character completion
+		char human_character = ' ';
+		if (encrypt_message) {
+			std::string enc_morse_code = "";
+			human_character = (*tree).find(tree, this->mc_character, &enc_morse_code); //returns letter for morse code character, i.e. .- returns A and updates the string pointer to contain an encrypted morse code
+			if(this->role==SENDER){
+				for (char emc : enc_morse_code)
+					this->send(&emc); //if encrypting, send after successful character input (rather than after each dot & dash)
 			}
 		}
+		else {
+			human_character = (*tree).find(tree, this->mc_character); //returns letter for morse code character, i.e. .- returns A
+		}
+		uBit.display.print(human_character);
 		this->message.push_back(human_character); //store the character into the string
 		this->mc_character = ""; //reset character string;
 		this->input_next_morse_char = false; //reset the need for a new character
 	}
 }
 void Interface::store_user_input(char user_input, Tree* tree) {	
+	
 	if (!this->encrypt_message) {
 		//if NOT encrypting, send instantly.
 		//if you are encrypting, send during the save character process
@@ -148,138 +152,173 @@ void Interface::send(char* c){
 		time = this->END_MSG + 50;
 	else
 		this->error();
-		
+	
+	uBit.display.scroll("send");
+	uBit.display.print(*c);
+	
 	P1.setDigitalValue(1);
 	uBit.sleep(time);
 	P1.setDigitalValue(0);
-
-}
-void Interface::insert(Tree * tree, char c, std::string morse_code) {
 	
-	//~ //NOT ENOUGH RAM FOR MAP!!
-	//~ if(this->encrypt_message) //only build the map if encrypting
-		//~ this->decryption_map.insert({ c, morse_code });
+	//noise
+	P1.setDigitalValue(0);
+	uBit.sleep(30);
+	P1.setDigitalValue(0);
 
-	if (!(*tree).insert(tree, c, morse_code)) //if input is not valid, an error will be thrown
-		this->error();
 }
-
 void Interface::build_tree(Tree* tree) {
 	//start inserting letters and corresponding morse code
-	this->insert(tree, 'A', ".-");
-	this->insert(tree, 'B', "-...");
-	this->insert(tree, 'C', "-.-.");
-	this->insert(tree, 'D', "-..");
-	this->insert(tree, 'E', ".");
-	this->insert(tree, 'F', "..-.");
-	this->insert(tree, 'G', "--.");
-	this->insert(tree, 'H', "....");
-	this->insert(tree, 'I', "..");
-	this->insert(tree, 'J', ".---");
-	this->insert(tree, 'K', "-.-");
-	this->insert(tree, 'L', ".-..");
-	this->insert(tree, 'M', "--");
-	this->insert(tree, 'N', "-.");
-	this->insert(tree, 'O', "---");
-	this->insert(tree, 'P', ".--.");
-	this->insert(tree, 'Q', "--.-");
-	this->insert(tree, 'R', ".-.");
-	this->insert(tree, 'S', "...");
-	this->insert(tree, 'T', "-");
-	this->insert(tree, 'U', "..-");
-	this->insert(tree, 'V', "...-");
-	this->insert(tree, 'W', ".--");
-	this->insert(tree, 'X', "-..-");
-	this->insert(tree, 'Y', "-.--");
-	this->insert(tree, 'Z', "--..");
-	this->insert(tree, '0', "-----");
-	this->insert(tree, '1', ".----");
-	this->insert(tree, '2', "..---");
-	this->insert(tree, '3', "...--");
-	this->insert(tree, '4', "....-");
-	this->insert(tree, '5', ".....");
-	this->insert(tree, '6', "-....");
-	this->insert(tree, '7', "--...");
-	this->insert(tree, '8', "---..");
-	this->insert(tree, '9', "----.");
-	this->insert(tree, 'A', ".-");
+	
+	if (!(*tree).insert(tree, 'A', ".-", "-.-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'B', "-...", "-..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'C', "-.-.", ".")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'D', "-..", "..-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'E', ".", "--.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'F', "..-.", "....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'G', "--.", "..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'H', "....", ".---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'I', "..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'J', ".---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'K', "-.-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'L', ".-..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'M', "--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'N', "-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'O', "---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'P', ".--.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Q', "--.-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'R', ".-.")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'S', "...")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'T', "-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'U', "..-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'V', "...-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'W', ".--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'X', "-..-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Y', "-.--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, 'Z', "--..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '0', "-----")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '1', ".----")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '2', "..---")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '3', "...--")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '4', "....-")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '5', ".....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '6', "-....")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '7', "--...")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '8', "---..")) //if input is not valid, an error will be thrown
+		this->error();
+	if (!(*tree).insert(tree, '9', "----.")) //if input is not valid, an error will be thrown
+		this->error();
 }
 void Interface::init() {
 	Tree* tree = new Tree(); //create empty tree, ready to add morse code tree details
 
 	while (1) {
-		uBit.display.scroll("Encrypt?");
-		// Y=-.-- / N=-.   Use # to confirm and @ to start agin"
-		std::string enc_s = "";
-		char enc_c = '~';
-		while ((enc_c != '#') && (enc_s!="-.--" || enc_s!="-.")) {
-			// read current number of milliseconds 
-			uint64_t reading = system_timer_current_time();
-			// loop while button A pressed
-			if(this->role==SENDER) { //if role is to send
-				while (buttonA.isPressed())
-					this->pressed = true;
-			}
-			while(P1.getDigitalValue()) {
-				this->pressed = true;
-				if(this->role==SENDER) {//if I've received something, stop be being a sender!
-					this->role = RECEIVER;
-				}
-			}
-			// time of loop execution
-			uint64_t delta = system_timer_current_time() - reading;
+		//~ uBit.display.scroll("Encrypt?");
+		//~ // Y=-.-- / N=-.   Use # to confirm and @ to start agin"
+		//~ std::string enc_s = "";
+		//~ char enc_c = '~';
+		//~ while ((enc_c != '#') && (enc_s!="-.--" || enc_s!="-.")) {
+			//~ // read current number of milliseconds 
+			//~ uint64_t reading = system_timer_current_time();
+			//~ // loop while button A pressed
+			//~ if(this->role==SENDER) { //if role is to send
+				//~ while (buttonA.isPressed())
+					//~ this->pressed = true;
+			//~ }
+			//~ while(P1.getDigitalValue()) {
+				//~ this->pressed = true;
+				//~ if(this->role==SENDER) {//if I've received something, stop be being a sender!
+					//~ this->role = RECEIVER;
+				//~ }
+			//~ }
+			//~ // time of loop execution
+			//~ uint64_t delta = system_timer_current_time() - reading;
 			
-			if(this->pressed){
-				//ultimately switches on/off encryption
-				//let the receiving device know whether we're using encryption or not.
-				//sends the morse code for Y or N for Encrypt/Decrypt respectively
+			//~ if(this->pressed){
+				//~ //ultimately switches on/off encryption
+				//~ //let the receiving device know whether we're using encryption or not.
+				//~ //sends the morse code for Y or N for Encrypt/Decrypt respectively
 				
-				if(delta > this->END_MSG){
-					enc_c = '@';
-					enc_s = "";
-					uBit.display.print(enc_c);
-					if(this->role==SENDER)
-						this->send(&enc_c);
-				}
-				else if(delta > this->END_CHAR){
-					enc_c = '#';
-					enc_s.push_back('#');
-					uBit.display.print(enc_c);
-					if(this->role==SENDER)
-						this->send(&enc_c);
-				}
-				else if(delta > this->DASH){
-					enc_c = '-';
-					enc_s.push_back('-');
-					uBit.display.print(enc_c);
-					if(this->role==SENDER)
-						this->send(&enc_c);
-				}
-				else if(delta > this->DOT){
-					enc_c = '.';
-					enc_s.push_back('.');
-					uBit.display.print(enc_c);
-					if(this->role==SENDER)
-						this->send(&enc_c);
-				}
-				else {
-					//noise / nothing happening
-				}
-				uBit.sleep(500);
-				uBit.display.clear();
-			}
-			this->pressed = false;
-		}
-		if (enc_s == "-.--#")
-			this->encrypt_message = true;
-		else if(enc_s == "-.#")
-			this->encrypt_message = false;
+				//~ if(delta > this->END_MSG){
+					//~ enc_c = '@';
+					//~ enc_s = "";
+					//~ uBit.display.print(enc_c);
+					//~ if(this->role==SENDER)
+						//~ this->send(&enc_c);
+				//~ }
+				//~ else if(delta > this->END_CHAR){
+					//~ enc_c = '#';
+					//~ enc_s.push_back('#');
+					//~ uBit.display.print(enc_c);
+					//~ if(this->role==SENDER)
+						//~ this->send(&enc_c);
+				//~ }
+				//~ else if(delta > this->DASH){
+					//~ enc_c = '-';
+					//~ enc_s.push_back('-');
+					//~ uBit.display.print(enc_c);
+					//~ if(this->role==SENDER)
+						//~ this->send(&enc_c);
+				//~ }
+				//~ else if(delta > this->DOT){
+					//~ enc_c = '.';
+					//~ enc_s.push_back('.');
+					//~ uBit.display.print(enc_c);
+					//~ if(this->role==SENDER)
+						//~ this->send(&enc_c);
+				//~ }
+				//~ else {
+					//~ //noise / nothing happening
+				//~ }
+				//~ uBit.sleep(500);
+				//~ uBit.display.clear();
+			//~ }
+			//~ this->pressed = false;
+		//~ }
+		//~ if (enc_s == "-.--#")
+			//~ this->encrypt_message = true;
+		//~ else if(enc_s == "-.#")
+			//~ this->encrypt_message = false;
 			
+		this->encrypt_message = true; //OVERRIDE!!!!!!!
 			
 		uBit.display.scroll(this->encrypt_message);
 
 
-		build_tree(tree); //set up the morse code and character tree/map
+		build_tree(tree); //set up the morse code and character tree
 
 		if(this->role==SENDER)
 			uBit.display.scroll("Enter Code:");

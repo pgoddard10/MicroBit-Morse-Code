@@ -4,7 +4,6 @@
 #include "Tree.h"
 #include <string>
 #include <vector>
-#include <map>
 
 class Interface
 {
@@ -20,7 +19,6 @@ public:
 	void decrypt(char* c);
 	void print_message();
 	void send(char* c);
-	void insert(Tree* tree, char c, std::string morse_code);
 	void build_tree(Tree* tree);
 
 private:
@@ -41,7 +39,6 @@ private:
 	int role;
 	bool input_next_morse_char;
 	bool encrypt_message;
-	std::map<char, std::string> decryption_map;
 	bool pressed;
 };
 
