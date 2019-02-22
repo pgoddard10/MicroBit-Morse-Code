@@ -12,7 +12,7 @@ Interface::Interface() {
 	
 	//constructer calls reset() because reset() is also used once broadcasting has finished.
 	//this allows for continuous message broadcasts.
-	this->reset();
+	this->reset(); //++++++++++++++++++++++++++++++++++++++++++++++ move to main.cpp
 }
 
 Interface::~Interface() {
@@ -40,6 +40,7 @@ void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 			std::string enc_morse_code = "";
 			human_character = (*tree).find(tree, this->mc_character, &enc_morse_code); //returns letter for morse code character, i.e. .- returns A and updates the string pointer to contain an encrypted morse code
 			if(this->role==SENDER){
+				uBit.display.scroll("Sending: ");
 				for (char emc : enc_morse_code)
 					this->send(&emc); //if encrypting, send after successful character input (rather than after each dot & dash)
 			}
@@ -89,19 +90,22 @@ void Interface::print_message() {
 	//loops through the message vector that's been built and outputs a character at a time
 
 	// +++++++++++++  COMPLETE (non-encrypted) MESSAGE
-	uBit.display.scroll("enc: ");
-	for (char m : this->message) {
-		char c = m;
-		uBit.display.print(m);
-		uBit.sleep(500);
+	if(this->role==RECEIVER){
+		uBit.display.scroll("Received: ");
+		for (char m : this->message) {
+			char c = m;
+			uBit.display.print(m);
+			uBit.sleep(500);
+		}
+		uBit.display.clear();
+		uBit.sleep(1000);
+		uBit.display.scroll("Decrypted ");
 	}
-	uBit.display.clear();
-	uBit.sleep(1000);
 
 	// +++++++++++++  COMPLETE (encrypted) MESSAGE
-	uBit.display.scroll("Your message: ");
+	uBit.display.scroll("Message: ");
 	for (char m : this->message) {
-		if (encrypt_message)
+		if ((encrypt_message) && (this->role==RECEIVER))
 			this->decrypt(&m);
 		char c = m;
 		uBit.display.print(m);
@@ -143,104 +147,70 @@ void Interface::decrypt(char* c) {
 void Interface::send(char* c){
 	uint64_t time = 0;
 	if (*c == '.')
-		time = this->DOT + 25;
+		time = this->DOT + 0;
 	else if (*c == '-')
-		time = this->DASH + 50;
+		time = this->DASH + 0;
 	else if (*c == '#')
-		time = this->END_CHAR + 50;
+		time = this->END_CHAR + 0;
 	else if (*c == '@')
-		time = this->END_MSG + 50;
+		time = this->END_MSG + 0;
 	else
 		this->error();
 	
-	uBit.display.scroll("send");
 	uBit.display.print(*c);
 	
 	P1.setDigitalValue(1);
 	uBit.sleep(time);
 	P1.setDigitalValue(0);
 	
-	//noise
-	P1.setDigitalValue(0);
-	uBit.sleep(30);
-	P1.setDigitalValue(0);
+	//send some noise
+	uBit.sleep(500);
+	uBit.display.clear();
+	uBit.sleep(500);
 
 }
 void Interface::build_tree(Tree* tree) {
 	//start inserting letters and corresponding morse code
 	
-	if (!(*tree).insert(tree, 'A', ".-", "-.-.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'B', "-...", "-..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'C', "-.-.", ".")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'D', "-..", "..-.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'E', ".", "--.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'F', "..-.", "....")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'G', "--.", "..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'H', "....", ".---")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'I', "..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'J', ".---")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'K', "-.-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'L', ".-..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'M', "--")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'N', "-.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'O', "---")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'P', ".--.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'Q', "--.-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'R', ".-.")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'S', "...")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'T', "-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'U', "..-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'V', "...-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'W', ".--")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'X', "-..-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'Y', "-.--")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, 'Z', "--..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '0', "-----")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '1', ".----")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '2', "..---")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '3', "...--")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '4', "....-")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '5', ".....")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '6', "-....")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '7', "--...")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '8', "---..")) //if input is not valid, an error will be thrown
-		this->error();
-	if (!(*tree).insert(tree, '9', "----.")) //if input is not valid, an error will be thrown
-		this->error();
+	// insert a new tree node containing this human-readable letter, the original morse-code and the encrypted morse-code strings
+	int err = (*tree).insert(tree, 'A', ".-", "-.-.");
+	err |=  (*tree).insert(tree, 'B', "-...", "-..");
+	err |=  (*tree).insert(tree, 'C', "-.-.", ".");
+	err |=  (*tree).insert(tree, 'D', "-..", "..-.");
+	err |=  (*tree).insert(tree, 'E', ".", "--.");
+	err |=  (*tree).insert(tree, 'F', "..-.", "....");
+	err |=  (*tree).insert(tree, 'G', "--.", "..");
+	err |=  (*tree).insert(tree, 'H', "....", ".---");
+	err |=  (*tree).insert(tree, 'I', "..", "-.-");
+	err |=  (*tree).insert(tree, 'J', ".---", ".-..");
+	err |=  (*tree).insert(tree, 'K', "-.-", "--");
+	err |=  (*tree).insert(tree, 'L', ".-..", "-.");
+	err |=  (*tree).insert(tree, 'M', "--", "---");
+	err |=  (*tree).insert(tree, 'N', "-.", ".--.");
+	err |=  (*tree).insert(tree, 'O', "---", "--.-");
+	err |=  (*tree).insert(tree, 'P', ".--.", ".-.");
+	err |=  (*tree).insert(tree, 'Q', "--.-", "...");
+	err |=  (*tree).insert(tree, 'R', ".-.", "-");
+	err |=  (*tree).insert(tree, 'S', "...", "..-");
+	err |=  (*tree).insert(tree, 'T', "-", "...-");
+	err |=  (*tree).insert(tree, 'U', "..-", ".--");
+	err |=  (*tree).insert(tree, 'V', "...-", "-..-");
+	err |=  (*tree).insert(tree, 'W', ".--", "-.--");
+	err |=  (*tree).insert(tree, 'X', "-..-", "--..");
+	err |=  (*tree).insert(tree, 'Y', "-.--", "-----");
+	err |=  (*tree).insert(tree, 'Z', "--..", ".----");
+	err |=  (*tree).insert(tree, '0', "-----", "..---");
+	err |=  (*tree).insert(tree, '1', ".----", "...--");
+	err |=  (*tree).insert(tree, '2', "..---", "....-");
+	err |=  (*tree).insert(tree, '3', "...--", ".....");
+	err |=  (*tree).insert(tree, '4', "....-", "-....");
+	err |=  (*tree).insert(tree, '5', ".....", "--...");
+	err |=  (*tree).insert(tree, '6', "-....", "---..");
+	err |=  (*tree).insert(tree, '7', "--...", "----.");
+	err |=  (*tree).insert(tree, '8', "---..", ".-");
+	err |=  (*tree).insert(tree, '9', "----.", "-...");
+	
+	if(err > 0) this->error(); //if any of the above inserts failed, call the error function
 }
 void Interface::init() {
 	Tree* tree = new Tree(); //create empty tree, ready to add morse code tree details

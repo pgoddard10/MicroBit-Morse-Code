@@ -25,12 +25,12 @@ bool Tree::insert(Tree* tree, char c, std::string morse_code, std::string enc_mo
 			tree = tree->dash;
 		}
 		else {
-			return false; //invalid input
+			return 1; //invalid input
 		}
 	}
 	tree->c = c;
 	tree->enc_morse_code = enc_morse_code;
-	return true;
+	return 0;
 }
 
 char Tree::find(Tree* tree, std::string morse_code, std::string* enc_morse_code) {
