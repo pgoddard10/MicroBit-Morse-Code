@@ -58,7 +58,7 @@ Please ensure that the devices are connected appropriately, as per the above Ins
 
 ## Technical Details
 ### Class Breakdown
-![Class Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/class diagram/ClassDiagram.png)
+![Class Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/class%20diagram/ClassDiagram.png)
 
 #### Tree
 
