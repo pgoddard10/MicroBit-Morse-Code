@@ -26,9 +26,9 @@ void Interface::init() {
 	
 	this->broadcasting = true;
 	this->role = SENDER; //set as sender initially, and change later if something is received.
-	this->input_next_morse_char = true;
+	//this->input_next_morse_char = true;
 	this->encrypt_message = false;
-	this->message_char.empty();
+	//this->message_char.empty();
 	this->mc_character = "";
 	this->message = "";
 	this->pressed = false;
@@ -60,7 +60,7 @@ void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 		uBit.display.print(human_character);
 		this->message.push_back(human_character); //store the character into the string
 		this->mc_character = ""; //reset character string;
-		this->input_next_morse_char = false; //reset the need for a new character
+		//this->input_next_morse_char = false; //reset the need for a new character
 	}
 }
 void Interface::store_user_input(char user_input, Tree* tree) {	
