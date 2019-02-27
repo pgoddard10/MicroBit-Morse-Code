@@ -30,7 +30,7 @@ void Interface::init() {
 
 void Interface::error(ManagedString err_msg) {
 	//display error message and pause.
-	uBit.display.scroll(err_msg);
+	uBit.display.scrollAsync(err_msg);
 	uBit.sleep(1000);
 }
 void Interface::mc_setup_next_char(char user_input, Tree* tree) {
@@ -88,7 +88,7 @@ void Interface::store_user_input(char user_input, Tree* tree) {
 void Interface::print_message() {
 	//loops through the message vector that's been built and prints a character at a time
 
-	// COMPLETE (non-encrypted) MESSAGE
+	// COMPLETE (encrypted) MESSAGE
 	if(this->role==RECEIVER){
 		uBit.display.scroll("Received: ");
 		//print the encrypted message
@@ -101,9 +101,11 @@ void Interface::print_message() {
 		uBit.display.scroll("Decrypted ");
 		//continue below, which is the unencrypted message
 	}
-
-	// COMPLETE (encrypted) MESSAGE
-	uBit.display.scroll("Message: ");
+	else {
+		uBit.display.scroll("Message: ");
+	}
+	
+	// COMPLETE (unencrypted) MESSAGE
 	for (char m : this->message) {
 		if ((encrypt_message) && (this->role==RECEIVER)) //message is encrypted during the sending process, so only decrypt if receiving
 			this->decrypt(&m);
@@ -226,7 +228,8 @@ void Interface::run() {
 		// Y=-.-- / N=-.   Use # to confirm and @ to start agin"
 		std::string enc_s = "";
 		char enc_c = '~';
-		while ((enc_c != '#') && (enc_s!="-.--" || enc_s!="-.")) {
+		bool valid_str = false;
+		while (!valid_str) {
 			// read current number of milliseconds 
 			uint64_t reading = system_timer_current_time();
 			// loop while button A pressed
@@ -236,7 +239,7 @@ void Interface::run() {
 			}
 			while(P1.getDigitalValue()) {
 				this->pressed = true;
-				if(this->role==SENDER) {//if I've received something, stop be being a sender!
+				if(this->role==SENDER) { //if I've received something, stop be being a sender!
 					this->role = RECEIVER;
 				}
 			}
@@ -283,11 +286,23 @@ void Interface::run() {
 				uBit.display.clear();
 			}
 			this->pressed = false;
+			
+			if (enc_s == "--#") { //yes
+				valid_str = true;
+				this->encrypt_message = true; //turn encryption on
+			}
+			else if(enc_s == "..#") { //no
+				valid_str = true;
+				this->encrypt_message = false; //turn encryption off
+			}
+			else { //invalid input
+				if(enc_c == '#') {
+					this->error("Invalid");
+					enc_s = ""; //reset to empty
+					enc_c = '~'; //reset to invalid char
+				}
+			}
 		}
-		if (enc_s == "-.--#")
-			this->encrypt_message = true;
-		else if(enc_s == "-.#")
-			this->encrypt_message = false;
 			
 		if(this->encrypt_message) //confirm back to the user whether encryption is on or off.
 			uBit.display.scroll("Encrypt ON");

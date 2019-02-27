@@ -13,23 +13,25 @@ Tree::~Tree() {
 }
 
 bool Tree::insert(Tree* tree, char c, std::string morse_code, std::string enc_morse_code) {
-	for (char mc : morse_code) {
+	//insert new data into the tree, creating a new leaf if needed.
+	
+	for (char mc : morse_code) { //loop through the morse code string (e.g. ".-.-")
 		if (mc == '.') {
 			if (tree->dot == nullptr)
-				tree->dot = new Tree();
+				tree->dot = new Tree(); //create new leaf on the tree in the dot position
 			tree = tree->dot;
 		}
 		else if (mc == '-') {
 			if (tree->dash == nullptr)
-				tree->dash = new Tree();
+				tree->dash = new Tree(); //create new leaf on the tree in the dash position
 			tree = tree->dash;
 		}
 		else {
 			return 1; //invalid input
 		}
 	}
-	tree->c = c;
-	tree->enc_morse_code = enc_morse_code;
+	tree->c = c; //copy the char into the leaf
+	tree->enc_morse_code = enc_morse_code; //copy the encrypted morse code string into the char
 	return 0;
 }
 
