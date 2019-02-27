@@ -31,8 +31,9 @@ void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 		if (encrypt_message) {
 			std::string enc_morse_code = "";
 			human_character = (*tree).find(tree, this->mc_character, &enc_morse_code); //returns letter for morse code character, i.e. .- returns A and updates the string pointer to contain an encrypted morse code
-			for (char emc : enc_morse_code)
+			for (char emc : enc_morse_code){
 				this->send(&emc); //if encrypting, send after successful character input (rather than after each dot & dash)
+			}
 		}
 		else {
 			human_character = (*tree).find(tree, this->mc_character); //returns letter for morse code character, i.e. .- returns A
@@ -43,6 +44,9 @@ void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 	}
 }
 void Interface::store_user_input(char user_input, Tree* tree) {
+
+	std::cout << user_input << std::endl;
+
 	if (!this->encrypt_message) {
 		//if NOT encrypting, send instantly.
 		//if you are encrypting, send during the save character process
@@ -124,6 +128,8 @@ void Interface::send(char* c){
 		std::cout << this->END_MSG + ((this->END_MSG / 100) * 2) << std::endl;
 	else
 		this->error();
+
+	std::cout << "50" << std::endl; //add some noise
 }
 void Interface::build_tree(Tree* tree) {
 	//start inserting letters and corresponding morse code
