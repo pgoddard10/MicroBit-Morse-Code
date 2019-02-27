@@ -8,13 +8,16 @@ MicroBitPin P1(MICROBIT_ID_IO_P1, MICROBIT_PIN_P1, PIN_CAPABILITY_DIGITAL);
 MicroBitButton buttonA(MICROBIT_PIN_BUTTON_A, MICROBIT_ID_BUTTON_A);
 
 Interface::Interface() {
-	uBit.init();
+	uBit.init(); //init the MicroBit object to allow use of the specific device functions at runtime
 }
 
 Interface::~Interface() {
 }
 
 void Interface::init() {
+	//set the default values for use within this application.
+	//called in main and after each successfully broadcasted message (to allow a further message to be sent)
+	
 	this->broadcasting = true;
 	this->role = SENDER; //set as sender initially, and change later if something is received.
 	this->input_next_morse_char = true;
@@ -25,19 +28,23 @@ void Interface::init() {
 	this->pressed = false;
 }
 
-void Interface::error() {
-	uBit.display.scroll("*.*");
+void Interface::error(ManagedString err_msg) {
+	//display error message and pause.
+	uBit.display.scroll(err_msg);
 	uBit.sleep(1000);
 }
 void Interface::mc_setup_next_char(char user_input, Tree* tree) {
+	// Handles the end of a morse code string, e.g. .- is the letter A.
+	// The info about each individual letter needs storing and, if applicable, sending
+	
 	if (this->mc_character.length() > 0) { //prevents empty characters being saved
-		char human_character = ' ';
-		if (encrypt_message) {
-			std::string enc_morse_code = "";
+		char human_character = ' '; //temp variable
+		if (encrypt_message) { //if encryption is on
+			std::string enc_morse_code = ""; //temp variable
 			human_character = (*tree).find(tree, this->mc_character, &enc_morse_code); //returns letter for morse code character, i.e. .- returns A and updates the string pointer to contain an encrypted morse code
-			if(this->role==SENDER){
+			if(this->role==SENDER){ //if this device is responsible for sending, send the entire character's morse code
 				uBit.display.scroll("Sending: ");
-				for (char emc : enc_morse_code)
+				for (char emc : enc_morse_code) //send one dot/dash at a time
 					this->send(&emc); //if encrypting, send after successful character input (rather than after each dot & dash)
 			}
 		}
@@ -61,49 +68,45 @@ void Interface::store_user_input(char user_input, Tree* tree) {
 	}
 
 	//start save procedure
-	if (user_input == '.' || user_input == '-') {
+	if (user_input == '.' || user_input == '-') { //verify that a dot or  dash has been input
 		this->mc_character = this->mc_character + user_input; //add input_morse_char onto the end of the vector at the end of the overall morse vector
 	}
 	else if (user_input == '#') { //character broadcast finished, start new character
 		this->mc_setup_next_char(user_input, tree);
-		if(this->role==SENDER) {
-			if (this->encrypt_message)
-				this->send(&user_input);
-		}
+		if(this->role==SENDER && this->encrypt_message)
+			this->send(&user_input); //send end of character (i.e. a hash)
 	}
 	else if (user_input == '@') {
 		this->mc_setup_next_char(user_input, tree); //allows end of message without sending end of character
-		if(this->role==SENDER) {
-			if (this->encrypt_message)
-				this->send(&user_input);
-		}
-		this->broadcasting = false;
+		if(this->role==SENDER && this->encrypt_message)
+			this->send(&user_input); //send end of message (i.e. a @)
+		this->broadcasting = false; //reset broadcasting to false as the message is over
 	}
-	else //invalid input
-		this->error();
+	else //invalid input character (should be impossible)
+		this->error("No save. Invalid input");
 }
 void Interface::print_message() {
-	//loops through the message vector that's been built and outputs a character at a time
+	//loops through the message vector that's been built and prints a character at a time
 
-	// +++++++++++++  COMPLETE (non-encrypted) MESSAGE
+	// COMPLETE (non-encrypted) MESSAGE
 	if(this->role==RECEIVER){
 		uBit.display.scroll("Received: ");
-		for (char m : this->message) {
-			char c = m;
-			uBit.display.print(m);
+		//print the encrypted message
+		for (char m : this->message) { //loop through each char
+			uBit.display.print(m); //print char
 			uBit.sleep(500);
 		}
 		uBit.display.clear();
 		uBit.sleep(1000);
 		uBit.display.scroll("Decrypted ");
+		//continue below, which is the unencrypted message
 	}
 
-	// +++++++++++++  COMPLETE (encrypted) MESSAGE
+	// COMPLETE (encrypted) MESSAGE
 	uBit.display.scroll("Message: ");
 	for (char m : this->message) {
-		if ((encrypt_message) && (this->role==RECEIVER))
+		if ((encrypt_message) && (this->role==RECEIVER)) //message is encrypted during the sending process, so only decrypt if receiving
 			this->decrypt(&m);
-		char c = m;
 		uBit.display.print(m);
 		uBit.sleep(500);
 	}
@@ -141,19 +144,24 @@ void Interface::decrypt(char* c) {
 		*c = (*c) - 2;
 }
 void Interface::send(char* c){
+	//sends individual character
+	//converts each character (. - # @) into a period of time that's defined in the header file
+	//sends a high value (1) for the period of time specificied.
+	//to ensure that the receiving device can tell the difference when send is called multiple times, we sleep for 1 second between sends
+	
 	uint64_t time = 0;
 	if (*c == '.')
-		time = this->DOT + 0;
+		time = this->DOT;
 	else if (*c == '-')
-		time = this->DASH + 0;
+		time = this->DASH;
 	else if (*c == '#')
-		time = this->END_CHAR + 0;
+		time = this->END_CHAR;
 	else if (*c == '@')
-		time = this->END_MSG + 0;
+		time = this->END_MSG;
 	else
-		this->error();
+		this->error("No send. Invalid char.");
 	
-	uBit.display.print(*c);
+	uBit.display.print(*c); //show the character that's being sent (. - # @)
 	
 	P1.setDigitalValue(1);
 	uBit.sleep(time);
@@ -161,12 +169,12 @@ void Interface::send(char* c){
 	
 	//send some noise
 	uBit.sleep(500);
-	uBit.display.clear();
+	uBit.display.clear(); //clear the screen, helping the user to see the gap between two of the same character
 	uBit.sleep(500);
 
 }
 void Interface::build_tree(Tree* tree) {
-	//start inserting letters and corresponding morse code
+	//start inserting letters and corresponding morse code into the tree
 	
 	// insert a new tree node containing this human-readable letter, the original morse-code and the encrypted morse-code strings
 	int err = (*tree).insert(tree, 'A', ".-", "-.-.");
@@ -206,9 +214,11 @@ void Interface::build_tree(Tree* tree) {
 	err |=  (*tree).insert(tree, '8', "---..", ".-");
 	err |=  (*tree).insert(tree, '9', "----.", "-...");
 	
-	if(err > 0) this->error(); //if any of the above inserts failed, call the error function
+	if(err > 0) this->error("Error inserting to tree."); //if any of the above inserts failed, call the error function
 }
 void Interface::run() {
+	// The main function that is responsible for interaction with the user and controlling the flow of events
+	
 	Tree* tree = new Tree(); //create empty tree, ready to add morse code tree details
 
 	while (1) {
@@ -279,10 +289,10 @@ void Interface::run() {
 		else if(enc_s == "-.#")
 			this->encrypt_message = false;
 			
-		this->encrypt_message = true; //OVERRIDE!!!!!!!
-			
-		uBit.display.scroll(this->encrypt_message);
-
+		if(this->encrypt_message) //confirm back to the user whether encryption is on or off.
+			uBit.display.scroll("Encrypt ON");
+		else
+			uBit.display.scroll("Encrypt OFF");
 
 		build_tree(tree); //set up the morse code and character tree
 
@@ -341,7 +351,7 @@ void Interface::run() {
 		this->print_message();
 		uBit.sleep(500);
 
-		this->init();
+		this->init(); //reset the variables back to default and allow the user to send another message
 	}
 	
 	

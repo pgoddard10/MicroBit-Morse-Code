@@ -2,6 +2,7 @@
 #define INTERFACE_H
 
 #include "Tree.h"
+#include "MicroBit.h"
 #include <string>
 #include <vector>
 
@@ -12,7 +13,7 @@ public:
 	~Interface();
 	void run();
 	void init();
-	void error();
+	void error(ManagedString err);
 	void store_user_input(char user_input, Tree* tree);
 	void mc_setup_next_char(char user_input, Tree* tree);
 	void encrypt(char* c);
