@@ -23,24 +23,24 @@ public:
 	void build_tree(Tree* tree);
 
 private:
-	enum Role {
+	enum Role { //whether the device sends or receives
 		SENDER,
 		RECEIVER
 	};
-	enum Time_value {
+	enum Time_value { //amount of time that represents each button inputable character
 		DOT = 500,
 		DASH = 1000,
 		END_CHAR = 2000,
 		END_MSG = 5000
 	};
 	std::vector<char> message_char;
-	std::string mc_character;
-	std::string message;
-	bool broadcasting;
-	int role;
 	bool input_next_morse_char;
-	bool encrypt_message;
-	bool pressed;
+	std::string mc_character; //stores the morse code string sequence
+	std::string message; //The entire message per broadcast (e.g. "HELLO")
+	bool broadcasting; // Whether the user has finished their message or not
+	int role; //whether the device is marked to send or receive
+	bool encrypt_message; //whether the message is encrypted or not
+	bool pressed; //whether the button is pressed or not. Used for sending (as this devices button) and receiving (as the sending devices button / pin input)
 };
 
 #endif

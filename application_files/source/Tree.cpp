@@ -1,3 +1,9 @@
+/*
+ * File: main.cpp
+ * Author: Paul Goddard
+ * Date: 20-02-2019
+ */
+
 #include "Tree.h"
 #include <string>
 
