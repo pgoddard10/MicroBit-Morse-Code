@@ -1,3 +1,0 @@
-﻿  Morse_Testing.cpp
-c:\users\paul\documents\visual studio 2017\ufcfvk-15-2-iot-challenge-2\morse_testing\morse_testing\morse_testing.cpp(16): warning C4715: 'swap_human_to_morse_code': not all control paths return a value
-  Morse_Testing.vcxproj -> C:\Users\paul\Documents\Visual Studio 2017\ufcfvk-15-2-iot-challenge-2\Morse_Testing\Debug\Morse_Testing.exe
