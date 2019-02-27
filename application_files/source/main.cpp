@@ -9,7 +9,7 @@
 
 int main() {
 
-    Interface mc = Interface();
-	mc.init();
-
+    Interface mc = Interface(); //create new interface
+	mc.init();	//initalise app
+	mc.run(); 	//run app
 }

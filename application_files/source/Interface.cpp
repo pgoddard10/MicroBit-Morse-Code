@@ -9,16 +9,12 @@ MicroBitButton buttonA(MICROBIT_PIN_BUTTON_A, MICROBIT_ID_BUTTON_A);
 
 Interface::Interface() {
 	uBit.init();
-	
-	//constructer calls reset() because reset() is also used once broadcasting has finished.
-	//this allows for continuous message broadcasts.
-	this->reset(); //++++++++++++++++++++++++++++++++++++++++++++++ move to main.cpp
 }
 
 Interface::~Interface() {
 }
 
-void Interface::reset() {
+void Interface::init() {
 	this->broadcasting = true;
 	this->role = SENDER; //set as sender initially, and change later if something is received.
 	this->input_next_morse_char = true;
@@ -212,76 +208,76 @@ void Interface::build_tree(Tree* tree) {
 	
 	if(err > 0) this->error(); //if any of the above inserts failed, call the error function
 }
-void Interface::init() {
+void Interface::run() {
 	Tree* tree = new Tree(); //create empty tree, ready to add morse code tree details
 
 	while (1) {
-		//~ uBit.display.scroll("Encrypt?");
-		//~ // Y=-.-- / N=-.   Use # to confirm and @ to start agin"
-		//~ std::string enc_s = "";
-		//~ char enc_c = '~';
-		//~ while ((enc_c != '#') && (enc_s!="-.--" || enc_s!="-.")) {
-			//~ // read current number of milliseconds 
-			//~ uint64_t reading = system_timer_current_time();
-			//~ // loop while button A pressed
-			//~ if(this->role==SENDER) { //if role is to send
-				//~ while (buttonA.isPressed())
-					//~ this->pressed = true;
-			//~ }
-			//~ while(P1.getDigitalValue()) {
-				//~ this->pressed = true;
-				//~ if(this->role==SENDER) {//if I've received something, stop be being a sender!
-					//~ this->role = RECEIVER;
-				//~ }
-			//~ }
-			//~ // time of loop execution
-			//~ uint64_t delta = system_timer_current_time() - reading;
+		uBit.display.scroll("Encrypt?");
+		// Y=-.-- / N=-.   Use # to confirm and @ to start agin"
+		std::string enc_s = "";
+		char enc_c = '~';
+		while ((enc_c != '#') && (enc_s!="-.--" || enc_s!="-.")) {
+			// read current number of milliseconds 
+			uint64_t reading = system_timer_current_time();
+			// loop while button A pressed
+			if(this->role==SENDER) { //if role is to send
+				while (buttonA.isPressed())
+					this->pressed = true;
+			}
+			while(P1.getDigitalValue()) {
+				this->pressed = true;
+				if(this->role==SENDER) {//if I've received something, stop be being a sender!
+					this->role = RECEIVER;
+				}
+			}
+			// time of loop execution
+			uint64_t delta = system_timer_current_time() - reading;
 			
-			//~ if(this->pressed){
-				//~ //ultimately switches on/off encryption
-				//~ //let the receiving device know whether we're using encryption or not.
-				//~ //sends the morse code for Y or N for Encrypt/Decrypt respectively
+			if(this->pressed){
+				//ultimately switches on/off encryption
+				//let the receiving device know whether we're using encryption or not.
+				//sends the morse code for Y or N for Encrypt/Decrypt respectively
 				
-				//~ if(delta > this->END_MSG){
-					//~ enc_c = '@';
-					//~ enc_s = "";
-					//~ uBit.display.print(enc_c);
-					//~ if(this->role==SENDER)
-						//~ this->send(&enc_c);
-				//~ }
-				//~ else if(delta > this->END_CHAR){
-					//~ enc_c = '#';
-					//~ enc_s.push_back('#');
-					//~ uBit.display.print(enc_c);
-					//~ if(this->role==SENDER)
-						//~ this->send(&enc_c);
-				//~ }
-				//~ else if(delta > this->DASH){
-					//~ enc_c = '-';
-					//~ enc_s.push_back('-');
-					//~ uBit.display.print(enc_c);
-					//~ if(this->role==SENDER)
-						//~ this->send(&enc_c);
-				//~ }
-				//~ else if(delta > this->DOT){
-					//~ enc_c = '.';
-					//~ enc_s.push_back('.');
-					//~ uBit.display.print(enc_c);
-					//~ if(this->role==SENDER)
-						//~ this->send(&enc_c);
-				//~ }
-				//~ else {
-					//~ //noise / nothing happening
-				//~ }
-				//~ uBit.sleep(500);
-				//~ uBit.display.clear();
-			//~ }
-			//~ this->pressed = false;
-		//~ }
-		//~ if (enc_s == "-.--#")
-			//~ this->encrypt_message = true;
-		//~ else if(enc_s == "-.#")
-			//~ this->encrypt_message = false;
+				if(delta > this->END_MSG){
+					enc_c = '@';
+					enc_s = "";
+					uBit.display.print(enc_c);
+					if(this->role==SENDER)
+						this->send(&enc_c);
+				}
+				else if(delta > this->END_CHAR){
+					enc_c = '#';
+					enc_s.push_back('#');
+					uBit.display.print(enc_c);
+					if(this->role==SENDER)
+						this->send(&enc_c);
+				}
+				else if(delta > this->DASH){
+					enc_c = '-';
+					enc_s.push_back('-');
+					uBit.display.print(enc_c);
+					if(this->role==SENDER)
+						this->send(&enc_c);
+				}
+				else if(delta > this->DOT){
+					enc_c = '.';
+					enc_s.push_back('.');
+					uBit.display.print(enc_c);
+					if(this->role==SENDER)
+						this->send(&enc_c);
+				}
+				else {
+					//noise / nothing happening
+				}
+				uBit.sleep(500);
+				uBit.display.clear();
+			}
+			this->pressed = false;
+		}
+		if (enc_s == "-.--#")
+			this->encrypt_message = true;
+		else if(enc_s == "-.#")
+			this->encrypt_message = false;
 			
 		this->encrypt_message = true; //OVERRIDE!!!!!!!
 			
@@ -345,7 +341,7 @@ void Interface::init() {
 		this->print_message();
 		uBit.sleep(500);
 
-		this->reset();
+		this->init();
 	}
 	
 	

@@ -10,7 +10,7 @@ class Interface
 public:
 	Interface();
 	~Interface();
-	void reset();
+	void run();
 	void init();
 	void error();
 	void store_user_input(char user_input, Tree* tree);
