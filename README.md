@@ -57,11 +57,18 @@ Now you are ready to send some Morse Code! See App Operation for instructions on
 ## App Operation
 Please ensure that the devices are connected appropriately, as per the above Installation instructions.
 
-<<<< Flow of operation >>>> ++++++++++++++ draw flow chart first. Use this for state diagram.
+###State Diagram
+![State Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/StateDiagram.png)
+Note: The application loops indefinitely to ensure that multiple messages can be sent and received. However, this state 
+diagram shows the sending/receiving of one message and the option to terminate instead of sending a new message. This is 
+achieved via powering off.
+
+### How-To
+
 
 ## Technical Details
 ### Class Breakdown
-![Class Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/class%20diagram/ClassDiagram.png)
+![Class Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/ClassDiagram.png)
 
 #### Tree
 This class stores the binary tree for the Morse Code.
@@ -81,8 +88,6 @@ Functions:
 Variables:
 - enum Role //whether the device sends or receives
 - enum Time_value //amount of time that represents each button inputable character
-- std::vector<char> message_char;
-- bool input_next_morse_char;
 - std::string mc_character; //stores the morse code string sequence
 - std::string message; //The entire message per broadcast (e.g. "HELLO")
 - bool broadcasting; // Whether the user has finished their message or not

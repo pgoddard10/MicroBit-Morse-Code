@@ -4,7 +4,6 @@
 #include "Tree.h"
 #include "MicroBit.h"
 #include <string>
-#include <vector>
 
 class Interface
 {
@@ -33,8 +32,6 @@ private:
 		END_CHAR = 2000,
 		END_MSG = 5000
 	};
-	//std::vector<char> message_char;
-	//bool input_next_morse_char;
 	std::string mc_character; //stores the morse code string sequence
 	std::string message; //The entire message per broadcast (e.g. "HELLO")
 	bool broadcasting; // Whether the user has finished their message or not

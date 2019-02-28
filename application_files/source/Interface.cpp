@@ -26,9 +26,7 @@ void Interface::init() {
 	
 	this->broadcasting = true;
 	this->role = SENDER; //set as sender initially, and change later if something is received.
-	//this->input_next_morse_char = true;
 	this->encrypt_message = false;
-	//this->message_char.empty();
 	this->mc_character = "";
 	this->message = "";
 	this->pressed = false;
@@ -60,7 +58,6 @@ void Interface::mc_setup_next_char(char user_input, Tree* tree) {
 		uBit.display.print(human_character);
 		this->message.push_back(human_character); //store the character into the string
 		this->mc_character = ""; //reset character string;
-		//this->input_next_morse_char = false; //reset the need for a new character
 	}
 }
 void Interface::store_user_input(char user_input, Tree* tree) {	
@@ -95,7 +92,7 @@ void Interface::print_message() {
 	//loops through the message vector that's been built and prints a character at a time
 
 	// COMPLETE (encrypted) MESSAGE
-	if(this->role==RECEIVER){
+	if((this->role==RECEIVER)&&(this->encrypt_message)){
 		uBit.display.scroll("Received: ");
 		//print the encrypted message
 		for (char m : this->message) { //loop through each char
@@ -104,7 +101,7 @@ void Interface::print_message() {
 		}
 		uBit.display.clear();
 		uBit.sleep(1000);
-		uBit.display.scroll("Decrypted ");
+		uBit.display.scroll("Decrypted: ");
 		//continue below, which is the unencrypted message
 	}
 	else {
@@ -113,7 +110,7 @@ void Interface::print_message() {
 	
 	// COMPLETE (unencrypted) MESSAGE
 	for (char m : this->message) {
-		if ((encrypt_message) && (this->role==RECEIVER)) //message is encrypted during the sending process, so only decrypt if receiving
+		if ((this->encrypt_message) && (this->role==RECEIVER)) //message is encrypted during the sending process, so only decrypt if receiving
 			this->decrypt(&m);
 		uBit.display.print(m);
 		uBit.sleep(500);
