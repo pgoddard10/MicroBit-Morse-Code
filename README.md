@@ -58,16 +58,42 @@ Now you are ready to send some Morse Code! See App Operation for instructions on
 Please ensure that the devices are connected appropriately, as per the above Installation instructions.
 
 ###State Diagram
-![State Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/StateDiagram.png)
+
+![State Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/StateDiagram.svg)
+
 Note: The application loops indefinitely to ensure that multiple messages can be sent and received. However, this state 
 diagram shows the sending/receiving of one message and the option to terminate instead of sending a new message. This is 
 achieved via powering off.
 
-### How-To
+### How-To use
+*Notes:* 
+Use only Button A for input.
+Holding Button A for lengths of time produces the following inputs:
+500ms = dot
+1000ms = dash
+2000ms = # (character end)
+5000ms = @ (message end)
+
+For sending and receiving:
+1. Ensure that both micro:bits are connected, have the correct software installed and powered-on. See the Hardware How-To.
+2. Pick the micro:bit you wish to send from (either can be used at this stage).
+
+The following steps apply to sending only. The receiving device will display the data received.
+3. You will be prompted whether you want encryption or not.
+	a. Enter -- for Yes and .. for No
+	b. Enter #
+4. You will now be prompted to enter a message.
+5. Enter the sequence of dots and dashes for the letter you wish to broadcast. (e.g. .-)
+6. Enter # to confirm that the character has finished (e.g. once .- has been entered, press # to confirm that this is the end of the sequence)
+7. Repeat steps 5 and 6 until the message has been completed.
+8. Enter @ to signal the end of message.
+9. The message that has been sent will appear on the screen.
+10. The application automatically restarts on both micro:bits. Start again from step 2 if you want to send another message.
 
 
 ## Technical Details
 ### Class Breakdown
+
 ![Class Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/ClassDiagram.png)
 
 #### Tree
