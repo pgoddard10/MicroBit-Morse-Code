@@ -57,7 +57,7 @@ Now you are ready to send some Morse Code! See App Operation for instructions on
 ## App Operation
 Please ensure that the devices are connected appropriately, as per the above Installation instructions.
 
-###State Diagram
+### State Diagram
 
 ![State Diagram](https://gitlab.uwe.ac.uk/p3-goddard/ufcfvk-15-2-iot-challenge-2/raw/master/diagrams/StateDiagram.svg)
 
@@ -76,12 +76,10 @@ Holding Button A for lengths of time produces the following inputs:
 
 For sending and receiving:
 1. Ensure that both micro:bits are connected, have the correct software installed and powered-on. See the Hardware How-To.
-2. Pick the micro:bit you wish to send from (either can be used at this stage).
-
-The following steps apply to sending only. The receiving device will display the data received.
+2. Pick the micro:bit you wish to send from (either can be used at this stage). The following steps apply to sending only. The receiving device will display the data received.
 3. You will be prompted whether you want encryption or not.
-	a. Enter -- for Yes and .. for No
-	b. Enter #
+    a. Enter -- for Yes and .. for No
+    b. Enter #
 4. You will now be prompted to enter a message.
 5. Enter the sequence of dots and dashes for the letter you wish to broadcast. (e.g. .-)
 6. Enter # to confirm that the character has finished (e.g. once .- has been entered, press # to confirm that this is the end of the sequence)
