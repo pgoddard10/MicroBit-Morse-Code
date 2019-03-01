@@ -85,8 +85,8 @@ For sending and receiving:
 3. You will be prompted whether you want encryption or not.
 
     a. Enter -- for Yes and .. for No
-
-    b. Enter #
+    b. Enter @ to reset and try again.
+    c. Enter #
 
 4. You will now be prompted to enter a message.
 5. Enter the sequence of dots and dashes for the letter you wish to broadcast. (e.g. .-)
